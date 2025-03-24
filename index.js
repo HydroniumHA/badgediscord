@@ -42,7 +42,7 @@ bot.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === "ping") {
-        interaction.reply("Pong!");
+        interaction.reply("Pong!!");
     }
 
     if (interaction.commandName === "mention") {
