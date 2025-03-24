@@ -18,20 +18,6 @@ bot.on("ready", async () => {
         {
             name: "mention",
             description: "Mentionne un utilisateur plusieurs fois",
-            options: [
-                {
-                    name: "utilisateur",
-                    description: "L'utilisateur à mentionner",
-                    type: ApplicationCommandOptionType.User,
-                    required: true
-                },
-                {
-                    name: "nombre",
-                    description: "Nombre de fois où mentionner (max 5)",
-                    type: ApplicationCommandOptionType.Integer,
-                    required: true
-                }
-            ]
         }
     ]);
 
@@ -42,32 +28,11 @@ bot.on("interactionCreate", async (interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === "ping") {
-        interaction.reply("Pong!!");
+        interaction.reply("Pong!");
     }
 
     if (interaction.commandName === "mention") {
-        const user = interaction.options.getUser("utilisateur");
-        let count = interaction.options.getInteger("nombre");
-
-        if (count > 20) count = 20; // Limite à 5 mentions max
-
-        const userId = interaction.user.id;
-        const now = Date.now();
-        const cooldownAmount = 10 * 1000; // 10 secondes
-
-        if (cooldowns.has(userId)) {
-            const expirationTime = cooldowns.get(userId) + cooldownAmount;
-            if (now < expirationTime) {
-                const timeLeft = Math.ceil((expirationTime - now) / 1000);
-                return interaction.reply({ content: `⏳ Attends encore ${timeLeft} secondes avant de réutiliser cette commande !`, ephemeral: true });
-            }
-        }
-
-        cooldowns.set(userId, now);
-        setTimeout(() => cooldowns.delete(userId), cooldownAmount);
-
-        let message = `${user} `.repeat(count);
-        await interaction.reply(message);
+        interaction.reply("Mention!");
     }
 });
 
