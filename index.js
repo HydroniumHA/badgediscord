@@ -14,7 +14,9 @@ bot
     console.log("Impossible de se connecter au bot - " + error)
   );
 
-const cooldowns = new Map();
+// Cooldown global
+let lastUsage = 0;
+const globalCooldown = 30 * 1000; // 30 secondes
 
 bot.on("ready", async () => {
   await bot.application.commands.set([
@@ -53,28 +55,27 @@ bot.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.commandName === "mention") {
+    const now = Date.now();
+
+    if (now - lastUsage < globalCooldown) {
+      const timeLeft = Math.ceil((lastUsage + globalCooldown - now) / 1000);
+      return interaction.reply({
+        content: `⏳ La commande est en cooldown ! Attendez encore ${timeLeft} secondes avant qu'un autre utilisateur puisse l'utiliser.`,
+        ephemeral: true,
+      });
+    }
+
+    lastUsage = now; // Met à jour le cooldown global
+
     const user = interaction.options.getUser("utilisateur");
     let count = interaction.options.getInteger("nombre");
 
     if (count > 20) count = 20; // Limite à 20 mentions max
 
-    const userId = interaction.user.id;
-    const now = Date.now();
-    const cooldownAmount = 10 * 1000; // 10 secondes
-
-    if (cooldowns.has(userId)) {
-      const expirationTime = cooldowns.get(userId) + cooldownAmount;
-      if (now < expirationTime) {
-        const timeLeft = Math.ceil((expirationTime - now) / 1000);
-        return interaction.reply({
-          content: `⏳ Attends encore ${timeLeft} secondes avant de réutiliser cette commande !`,
-          ephemeral: true,
-        });
-      }
-    }
-
-    cooldowns.set(userId, now);
-    setTimeout(() => cooldowns.delete(userId), cooldownAmount);
+    await interaction.reply({
+      content: `Mention de ${user} en cours...`,
+      ephemeral: true,
+    });
 
     for (let i = 0; i < count; i++) {
       await interaction.channel.send(`${user}`);
@@ -82,6 +83,7 @@ bot.on("interactionCreate", async (interaction) => {
   }
 });
 
+// Express server
 const express = require("express");
 const app = express();
 const port = 3000;
