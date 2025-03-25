@@ -18,19 +18,6 @@ bot
 let lastUsage = 0;
 const globalCooldown = 30 * 1000; // 30 secondes
 
-// Liste des activités pour le statut
-const activities = [
-  { type: "PLAYING", message: "Kuydan 🚀" },
-  { type: "LISTENING", message: "Kuydan 🎧" },
-  { type: "WATCHING", message: "Kuydan 👀" },
-];
-
-let i = 0;
-setInterval(() => {
-  const activity = activities[i++ % activities.length];
-  bot.user.setActivity(activity.message, { type: activity.type });
-}, 10 * 1000); // Change toutes les 10 secondes
-
 bot.on("ready", async () => {
   await bot.application.commands.set([
     {
